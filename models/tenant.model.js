@@ -25,7 +25,7 @@ const tenantSchema = new mongoose.Schema(
     },
 
     roomRented: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId || null,
       ref: "Room",
     },
   },

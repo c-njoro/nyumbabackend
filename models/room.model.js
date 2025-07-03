@@ -25,7 +25,7 @@ const roomSchema = new mongoose.Schema({
     required: true,
   },
   tenant: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId || null,
     ref: "Tenant",
   },
   status: {
