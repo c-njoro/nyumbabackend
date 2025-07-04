@@ -20,7 +20,7 @@ const tenantSchema = new mongoose.Schema(
       required: true,
     },
     propertyRented: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId || null,
       ref: "Property",
     },
 
