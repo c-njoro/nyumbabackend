@@ -1,6 +1,7 @@
 const Room = require("../models/room.model");
 const Property = require("../models/property.model");
 const Tenant = require("../models/tenant.model");
+const Landlord = require("../models/landlord.model");
 
 // Create a new room
 exports.createRoom = async (req, res) => {
@@ -21,7 +22,7 @@ exports.createRoom = async (req, res) => {
     }
 
     // Check if the landlord exists
-    const existingLandlord = await Tenant.findById(landlord);
+    const existingLandlord = await Landlord.findById(landlord);
     if (!existingLandlord) {
       return res.status(404).json({ message: "Landlord not found" });
     }

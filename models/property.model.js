@@ -20,7 +20,7 @@ const propertySchema = new mongoose.Schema({
   ],
 
   landlordId: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId || null,
     ref: "Landlord",
     required: true,
   },
@@ -31,12 +31,6 @@ const propertySchema = new mongoose.Schema({
     },
   ],
 
-  tenants: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Tenant",
-    },
-  ],
   timestamps: true,
 });
 
