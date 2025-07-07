@@ -13,7 +13,7 @@ const {
 } = require("../controllers/landlord.controller");
 
 //landlord routes
-landlordRouter.post("/", createLandlord);
+landlordRouter.post("/create", createLandlord);
 landlordRouter.post("/add-property/:landlordId", addPropertyToLandlord);
 landlordRouter.get("/get-one/:landlordId", getLandlordById);
 landlordRouter.get("/", getAllLandlords);

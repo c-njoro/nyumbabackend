@@ -12,7 +12,7 @@ const {
 
 //tenant routes
 tenantRouter.post("/create-with-no-room", createTenantWithNoRoom);
-tenantRouter.post("/create-with-room", createTenantWithRoom);
+tenantRouter.post("/create", createTenantWithRoom);
 tenantRouter.get("/", getAllTenants);
 tenantRouter.get("/get-one/:tenantId", getTenantById);
 tenantRouter.put("/update/:tenantId", updateTenant);

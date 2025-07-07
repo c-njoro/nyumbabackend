@@ -10,7 +10,7 @@ const {
   getRoomById,
 } = require("../controllers/room.controller");
 
-roomRouter.post("/", createRoom);
+roomRouter.post("/create", createRoom);
 roomRouter.put("/update-availability/:roomId", updateRoomAvailability);
 roomRouter.put("/update-renting-price/:roomId", updateRoomRentingPrice);
 roomRouter.get("/", getAllRooms);

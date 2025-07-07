@@ -42,9 +42,11 @@ exports.createRoom = async (req, res) => {
     // Update the property with the new room
     existingProperty.rooms.push(savedRoom._id);
     await existingProperty.save();
+
+    res.status(201).json({ room: savedRoom });
   } catch (error) {
     console.error("Error creating room:", error);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ message: "Internal server error", error: error });
   }
 };
 

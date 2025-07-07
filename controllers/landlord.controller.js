@@ -27,7 +27,6 @@ exports.createLandlord = async (req, res) => {
     const savedLandlord = await newLandlord.save();
 
     res.status(201).json({
-      message: "Landlord created successfully",
       landlord: savedLandlord,
     });
   } catch (error) {

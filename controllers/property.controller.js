@@ -33,8 +33,16 @@ exports.createPropertyAndAddToLandlord = async (req, res) => {
 
     const savedProperty = await newProperty.save();
 
+    // Add the property to the landlord's properties array
+    await Landlord.findByIdAndUpdate(
+      landlordId,
+      { $push: { properties: savedProperty._id } },
+      { new: true }
+    );
+
     res.status(201).json(savedProperty);
   } catch (error) {
+    console.log("Error creating property:", error);
     return res.status(500).json({
       message:
         "Internal server error: Could not create property and add to landlord.",
@@ -45,10 +53,9 @@ exports.createPropertyAndAddToLandlord = async (req, res) => {
 // Get all properties
 exports.getAllProperties = async (req, res) => {
   try {
-    const properties = await Property.find().populate(
-      "landlordId",
-      "name email"
-    );
+    const properties = await Property.find()
+      .populate("landlordId", "name email")
+      .populate("rooms");
 
     if (properties.length === 0) {
       return res.status(404).json({ message: "No properties found" });
