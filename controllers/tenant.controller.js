@@ -3,6 +3,10 @@ const Property = require("../models/property.model");
 const Tenant = require("../models/tenant.model");
 const Landlord = require("../models/landlord.model");
 
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
+
 //create a tenant without a room
 exports.createTenantWithNoRoom = async (req, res) => {
   try {
@@ -200,6 +204,49 @@ exports.deleteTenant = async (req, res) => {
     res.status(200).json({ message: "Tenant deleted successfully" });
   } catch (error) {
     console.error("Error deleting tenant:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+exports.tenantLogin = async (req, res) => {
+  try {
+    //login
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res.status(400).json({
+        message: "Email and password are required",
+      });
+    }
+
+    // Find the landlord by email
+    const tenant = await Tenant.findOne({ email });
+    if (!tenant) {
+      return res.status(404).json({ message: "Tenant not found" });
+    }
+
+    // Check if the password is correct without bcrypt
+
+    if (password != tenant.password) {
+      return res.status(401).json({ message: "Invalid password" });
+    }
+
+    // Generate a JWT token
+    const token = jwt.sign(
+      { id: tenant._id, email: tenant.email },
+      process.env.JWT_SECRET,
+      { expiresIn: "3h" }
+    );
+    res.status(200).json({
+      token,
+      tenant: {
+        id: tenant._id,
+        name: tenant.name,
+        email: tenant.email,
+        phoneNumber: tenant.phoneNumber,
+      },
+    });
+  } catch (error) {
+    console.error("Error during tenant login:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };

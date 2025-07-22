@@ -10,6 +10,7 @@ const {
   deleteLandlord,
   removePropertyFromLandlord,
   getPropertiesOfLandlord,
+  landlordLogin,
 } = require("../controllers/landlord.controller");
 
 //landlord routes
@@ -27,5 +28,6 @@ landlordRouter.get(
   "/get-landlord-properties/:landlordId",
   getPropertiesOfLandlord
 );
+landlordRouter.post("/login", landlordLogin);
 
 module.exports = landlordRouter;

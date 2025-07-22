@@ -3,6 +3,10 @@ const Property = require("../models/property.model");
 const Tenant = require("../models/tenant.model");
 const Landlord = require("../models/landlord.model");
 
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
+
 // Create a new landlord
 exports.createLandlord = async (req, res) => {
   try {
@@ -96,7 +100,6 @@ exports.getAllLandlords = async (req, res) => {
     const landlords = await Landlord.find().populate("properties");
 
     res.status(200).json({
-      message: "Landlords retrieved successfully",
       landlords,
     });
   } catch (error) {
@@ -271,6 +274,51 @@ exports.getPropertiesOfLandlord = async (req, res) => {
     });
   } catch (error) {
     console.error("Error retrieving properties of landlord:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+//login as landlord
+
+exports.landlordLogin = async (req, res) => {
+  try {
+    //login
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res.status(400).json({
+        message: "Email and password are required",
+      });
+    }
+
+    // Find the landlord by email
+    const landlord = await Landlord.findOne({ email });
+    if (!landlord) {
+      return res.status(404).json({ message: "Landlord not found" });
+    }
+
+    // Check if the password is correct without bcrypt
+
+    if (password != landlord.password) {
+      return res.status(401).json({ message: "Invalid password" });
+    }
+
+    // Generate a JWT token
+    const token = jwt.sign(
+      { id: landlord._id, email: landlord.email },
+      process.env.JWT_SECRET,
+      { expiresIn: "3h" }
+    );
+    res.status(200).json({
+      token,
+      landlord: {
+        id: landlord._id,
+        name: landlord.name,
+        email: landlord.email,
+        phoneNumber: landlord.phoneNumber,
+      },
+    });
+  } catch (error) {
+    console.error("Error during landlord login:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };

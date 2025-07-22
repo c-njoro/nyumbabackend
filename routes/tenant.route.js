@@ -8,6 +8,7 @@ const {
   getTenantById,
   updateTenant,
   deleteTenant,
+  tenantLogin,
 } = require("../controllers/tenant.controller");
 
 //tenant routes
@@ -17,5 +18,6 @@ tenantRouter.get("/", getAllTenants);
 tenantRouter.get("/get-one/:tenantId", getTenantById);
 tenantRouter.put("/update/:tenantId", updateTenant);
 tenantRouter.delete("/delete/:tenantId", deleteTenant);
+tenantRouter.post("/login", tenantLogin);
 
 module.exports = tenantRouter;
