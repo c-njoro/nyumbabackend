@@ -229,12 +229,15 @@ exports.getRoomById = async (req, res) => {
     }
 
     // Find the room by ID
-    const room = await Room.findById(roomId);
+    const room = await Room.findById(roomId)
+      .populate("property")
+      .populate("landlord")
+      .populate("tenant");
     if (!room) {
       return res.status(404).json({ message: "Room not found" });
     }
 
-    return res.status(200).json({ room });
+    return res.status(200).json(room);
   } catch (error) {
     console.error("Error fetching room:", error);
     res.status(500).json({ message: "Internal server error" });

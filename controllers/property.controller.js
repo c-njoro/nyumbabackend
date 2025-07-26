@@ -78,8 +78,7 @@ exports.getPropertyById = async (req, res) => {
     }
 
     const property = await Property.findById(propertyId)
-      .populate("landlordId", "name email")
-      .populate("rooms");
+    .populate("rooms");
 
     if (!property) {
       return res.status(404).json({ message: "Property not found" });
