@@ -243,3 +243,113 @@ exports.getRoomById = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+//make a room available
+exports.makeRoomAvailable = async (req, res) => {
+  try {
+    const { roomId } = req.params;
+
+    // Validate input
+    if (!roomId) {
+      return res.status(400).json({ message: "Room ID is required" });
+    }
+
+    // Find the room by ID
+    const room = await Room.findById(roomId);
+    if (!room) {
+      return res.status(404).json({ message: "Room not found" });
+    }
+
+    // Check if the room is already available
+    if (room.status === "available") {
+      return res.status(400).json({ message: "Room is already available" });
+    }
+
+    //check if it has a tenant and then clear the tenant's roomRented field
+    if (!room.tenant) {
+      return res
+        .status(400)
+        .json({ message: "Room is not rented, tenant field is empty" });
+    }
+
+    const tenant = await Tenant.findById(room.tenant);
+
+    if (!tenant) {
+      return res
+        .status(404)
+        .json({ message: "Tenant details not found found" });
+    }
+
+    tenant.roomRented = null;
+    tenant.propertyRented = null;
+    room.status = "available";
+    room.tenant = null;
+    await tenant.save();
+    await room.save();
+
+    return res.status(200).json({ message: "Room made available", room });
+  } catch (error) {
+    console.error("Error making room available:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+//rent a room
+exports.rentRoom = async (req, res) => {
+  try {
+    const { roomId } = req.params;
+    const { tenantPhone } = req.body;
+
+    // Validate input
+    if (!roomId || !tenantPhone) {
+      return res.status(400).json({
+        message: "Room ID and tenant phone number are required to rent a room",
+      });
+    }
+
+    // Find the room by ID
+    const room = await Room.findById(roomId);
+    if (!room) {
+      return res.status(404).json({ message: "Room not found" });
+    }
+
+    // Check if the room is already rented
+    if (room.status === "rented") {
+      return res.status(400).json({ message: "Room is already rented" });
+    }
+
+    // Find the tenant by phone number
+    const tenant = await Tenant.findOne({ phoneNumber: tenantPhone });
+    if (!tenant) {
+      return res
+        .status(404)
+        .json({
+          message:
+            "Tenant has no account on the app. Ask the tenant to create one.",
+        });
+    }
+
+    // Check if the tenant is already renting a room
+    if (tenant.roomRented) {
+      return res.status(400).json({
+        message: "Tenant is already renting a room.",
+      });
+    }
+
+    // Update the room and tenant details
+    room.status = "rented";
+    room.tenant = tenant._id;
+    tenant.roomRented = room._id;
+    tenant.propertyRented = room.property;
+    await room.save();
+    await tenant.save();
+    return res.status(200).json({
+      message: "Room rented successfully",
+      room,
+      tenant,
+    });
+  } catch (error) {
+    console.error("Error renting room:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
